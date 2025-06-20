@@ -6,10 +6,12 @@ const borrowSchema: Schema<IBorrow> = new Schema(
     book: {
       type: Schema.Types.ObjectId,
       ref: "Book",
+      required: [true, "Book reference is required"],
     },
     quantity: {
       type: Number,
-      required: true,
+      required: [true, "Quantity is required"],
+      validate: (value: number) => value > 0,
     },
     dueDate: {
       type: Date,
@@ -18,6 +20,7 @@ const borrowSchema: Schema<IBorrow> = new Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 

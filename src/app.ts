@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { Application } from "express";
 import bookRoutes from "./app/routes/book.routes";
 import borrowRoutes from "./app/routes/borrow.routes";
+import { errorHandler } from "./app/middlewares/errorHandler";
 
 const app: Application = express();
 
@@ -22,6 +23,6 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 export default app;
