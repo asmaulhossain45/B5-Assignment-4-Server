@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IBook } from "../interfaces/book.interface";
+import { IBook, IBookMethods } from "../interfaces/book.interface";
 
-const bookSchema: Schema<IBook> = new Schema(
+const bookSchema: Schema<IBook, Model<IBook>, IBookMethods> = new Schema(
   {
     title: {
       type: String,
@@ -50,15 +50,15 @@ const bookSchema: Schema<IBook> = new Schema(
   }
 );
 
-bookSchema.methods.updateAvailability = function () {
+bookSchema.method("updateAvailability", function () {
   this.available = this.copies > 0;
-};
+});
 
 bookSchema.pre("save", function (next) {
-  this.available = this.copies > 0;
+  this.updateAvailability();
   next();
 });
 
-const Book: Model<IBook> = mongoose.model<IBook>("Book", bookSchema);
+const Book = mongoose.model("Book", bookSchema);
 
 export default Book;

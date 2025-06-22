@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Borrow from "../models/borrow.model";
 import Book from "../models/book.model";
 
-const getBorrowedBookSummary = async (
+export const getBorrowedBookSummary = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -38,6 +38,15 @@ const getBorrowedBookSummary = async (
       },
     ]);
 
+    if (data.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Borrowed books summary not found",
+        error: "There are no borrowed books",
+      });
+      return;
+    }
+
     res.status(200).json({
       success: true,
       message: "Borrowed books summary retrieved successfully",
@@ -48,31 +57,34 @@ const getBorrowedBookSummary = async (
   }
 };
 
-const borrowBook = async (req: Request, res: Response, next: NextFunction) => {
+export const borrowBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { book: bookId, quantity, dueDate } = req.body;
 
   try {
     const book = await Book.findById(bookId);
     if (!book) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: "Book not found",
         error: "The book does not exist",
       });
+      return;
     }
 
     if (book.copies < quantity) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        message: `You can not borrow ${quantity} books`,
-        error: `There is only ${book.copies} copies available`,
+        message: `There is only ${book.copies} copies available`,
+        error: `Not enough copies available`,
       });
+      return;
     }
 
     const borrow = await Borrow.create({ book: bookId, quantity, dueDate });
-
-    book.copies -= quantity;
-    await book.save();
 
     res.status(201).json({
       success: true,
@@ -83,5 +95,3 @@ const borrowBook = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-
-export { getBorrowedBookSummary, borrowBook };

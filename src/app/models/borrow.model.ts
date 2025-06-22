@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { IBorrow } from "../interfaces/borrow.interface";
+import Book from "./book.model";
 
 const borrowSchema: Schema<IBorrow> = new Schema(
   {
@@ -11,7 +12,7 @@ const borrowSchema: Schema<IBorrow> = new Schema(
     quantity: {
       type: Number,
       required: [true, "Quantity is required"],
-      validate: (value: number) => value > 0,
+      min: [1, "Quantity must be at least 1"],
     },
     dueDate: {
       type: Date,
@@ -24,6 +25,15 @@ const borrowSchema: Schema<IBorrow> = new Schema(
   }
 );
 
-const Borrow: Model<IBorrow> = mongoose.model<IBorrow>("Borrow", borrowSchema);
+borrowSchema.post("save", async function (doc) {
+  const book = await Book.findById(doc.book);
+
+  if (book) {
+    book.copies -= doc.quantity;
+    await book.save();
+  }
+});
+
+const Borrow = mongoose.model<IBorrow>("Borrow", borrowSchema);
 
 export default Borrow;

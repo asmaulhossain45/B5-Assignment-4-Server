@@ -13,6 +13,15 @@ export const getAllBooks = async (
       .sort({ [sortBy as string]: sort === "desc" ? -1 : 1 })
       .limit(parseInt(limit as string));
 
+    if (books.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "No books found",
+        error: "No books found",
+      });
+      return;
+    }
+
     res.status(200).json({
       success: true,
       message: "Books retrieved successfully",
@@ -102,6 +111,8 @@ export const updateBook = async (
       return;
     }
 
+    book.updateAvailability();
+
     res.status(200).json({
       success: true,
       message: "Book updated successfully",
@@ -120,6 +131,16 @@ export const deleteBook = async (
   const { bookId } = req.params;
   try {
     const book = await Book.findByIdAndDelete(bookId);
+
+    if (!book) {
+      res.status(404).json({
+        success: false,
+        message: "Book not found",
+        error: "The book does not exist",
+      });
+      return;
+    }
+
     res.status(200).json({
       success: true,
       message: "Book deleted successfully",
