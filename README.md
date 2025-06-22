@@ -87,14 +87,27 @@ POST /api/borrow
 GET /api/borrow
 ```
 
-## 🧪 Sample Request
+## 🧪 Create Book Sample
 ```json
-// POST /api/borrow
+{
+  "title": "The Theory of Everything",
+  "author": "Stephen Hawking",
+  "genre": "SCIENCE",
+  "isbn": "9780553380163",
+  "description": "An overview of cosmology and black holes.",
+  "copies": 5,
+  "available": true
+}
+```
+
+## 🧪 Borrow a Book Sample
+```json
 {
   "book": "64ab3f9e2a4b5c6d7e8f9012",
   "quantity": 2,
   "dueDate": "2025-07-18T00:00:00.000Z"
 }
+```
 
 ---
-Built for Assignment 3 — Library Management API
+This Project is built for Assignment 3 — Library Management API
