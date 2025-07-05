@@ -4,16 +4,14 @@ import bookRoutes from "./app/routes/book.routes";
 import borrowRoutes from "./app/routes/borrow.routes";
 import { errorHandler } from "./app/middlewares/errorHandler";
 import cors from "cors";
-import config from "./config";
 
 const app: Application = express();
 
 const allowedOrigins = [
-  config.CLIENT_URL,
+  "https://b5assignment4client.vercel.app",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
 ];
-
 app.use(
   cors({
     origin: allowedOrigins,
