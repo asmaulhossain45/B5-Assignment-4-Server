@@ -1,23 +1,23 @@
-import express, { Request, Response } from "express";
+import cors from "cors";
 import { Application } from "express";
 import bookRoutes from "./app/routes/book.routes";
+import express, { Request, Response } from "express";
 import borrowRoutes from "./app/routes/borrow.routes";
 import { errorHandler } from "./app/middlewares/errorHandler";
-import cors from "cors";
 
 const app: Application = express();
 
-const allowedOrigins = [
-  "https://b5assignment4client.vercel.app",
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-];
+app.use(express.json());
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://b5assignment4client.vercel.app",
+    ],
   })
 );
-app.use(express.json());
 
 app.use("/api/books", bookRoutes);
 app.use("/api/borrow", borrowRoutes);
