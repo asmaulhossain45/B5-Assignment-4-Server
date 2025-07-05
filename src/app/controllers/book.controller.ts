@@ -6,26 +6,38 @@ export const getAllBooks = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { filter, sortBy = "createdAt", sort = "desc", limit = 10 } = req.query;
   try {
-    const query = filter ? { genre: filter } : {};
-    const books = await Book.find(query)
-      .sort({ [sortBy as string]: sort === "desc" ? -1 : 1 })
-      .limit(parseInt(limit as string));
+    const genre = (req.query.filter as string) || "";
+    const sortBy = (req.query.sortBy as string) || "title";
+    const sortOrder = (req.query.sortOrder as "asc" | "desc") || "asc";
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-    if (books.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "No books found",
-        error: "No books found",
-      });
-      return;
+    const sortOptions: Record<string, 1 | -1> = {
+      [sortBy]: sortOrder === "asc" ? 1 : -1,
+    };
+
+    const filter: Record<string, unknown> = {};
+    if (genre) {
+      filter.genre = genre.toUpperCase();
     }
+
+    const skip = (page - 1) * limit;
+
+    const [books, total] = await Promise.all([
+      Book.find(filter).sort(sortOptions).skip(skip).limit(limit),
+      Book.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       success: true,
       message: "Books retrieved successfully",
       data: books,
+      meta: {
+        total,
+        page,
+        limit,
+      },
     });
   } catch (error) {
     next(error);
@@ -85,22 +97,12 @@ export const updateBook = async (
   next: NextFunction
 ) => {
   const { bookId } = req.params;
-  const { copies } = req.body;
+  const updatedBook = req.body;
   try {
-    if (copies === undefined) {
-      res.status(400).json({
-        success: false,
-        message: "Book copies is required",
-        error: "Book copies is required",
-      });
-      return;
-    }
-
-    const book = await Book.findByIdAndUpdate(
-      bookId,
-      { copies },
-      { runValidators: true, new: true }
-    );
+    const book = await Book.findByIdAndUpdate(bookId, updatedBook, {
+      runValidators: true,
+      new: true,
+    });
 
     if (!book) {
       res.status(404).json({
@@ -112,6 +114,7 @@ export const updateBook = async (
     }
 
     book.updateAvailability();
+    await book.save();
 
     res.status(200).json({
       success: true,

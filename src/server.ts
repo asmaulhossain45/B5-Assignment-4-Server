@@ -10,7 +10,6 @@ const connectDB = async () => {
       dbName: config.DB_NAME,
     });
     isConnected = true;
-    console.log("✅ Database connected");
   }
 };
 

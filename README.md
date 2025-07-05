@@ -36,21 +36,23 @@ src/
 ```bash
 gh repo clone asmaulhossain45/B5-Assignment-3
 cd B5-Assignment-3
-npm install
+yarn install
 ```
 
 ## ⚙️ Environment Variables
 Create a `.env` file in the root:
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/library
+DB_NAME
+MONGO_URI=
+CLIENT_URL=
 ```
 
 ## 🛠️ Scripts
 ```bash
-npm run dev      # Run in dev mode using ts-node-dev
-npm run build    # Compile TypeScript to JavaScript
-npm start        # Run compiled app from dist/
+yarn run dev      # Run in dev mode using ts-node-dev
+yarn run build    # Compile TypeScript to JavaScript
+yarn start        # Run compiled app from dist/
 ```
 
 ## 📚 API Endpoints
@@ -62,7 +64,7 @@ POST /api/books
 ```
 #### Get All Books (with filter, sort, limit)
 ```http
-GET /api/books?filter=SCIENCE&sortBy=createdAt&sort=desc&limit=5
+GET /api/books?filter=SCIENCE&sortBy=createdAt&sortOrder=desc&page=1&limit=5
 ```
 #### Get Book by ID
 ```http
