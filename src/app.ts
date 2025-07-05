@@ -8,9 +8,15 @@ import config from "./config";
 
 const app: Application = express();
 
+const allowedOrigins = [
+  config.CLIENT_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+];
+
 app.use(
   cors({
-    origin: config.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   })
 );
